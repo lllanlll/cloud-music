@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.el-header {
+  height: 30px;
+  line-height: 30px;
+  background-color: #ff8000;
+  padding-left: 20px;
+  color: #fff;
+}
+
+.logoText {
+  float: left;
+}
+.loginDetail {
+  float: right;
+}
+.logBtn {
+  margin-right: 20px;
+  color: #fff;
+  text-decoration: none;
+}
+.logBtn:hover {
+  color: red;
+}
+.loginDetail span {
+  margin-right: 10px;
+  color: aquamarine;
+}
+.user {
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+/* .el-aside {
+  border-right: 1px solid red;
+  height: 800px;
+  overflow-y: auto;
+}
+.aside-item {
+  height: 50px;
+  line-height: 50px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.aside-item span {
+  margin-left: 10px;
+}
+.aside-item:hover { 
+  background-color: #dee1e6;
+} */
+
+.myMusic p, .myMusicList p{
+  padding-left: 10px;
+  margin-bottom: 10px;
+  color: #dee1e6;
+}
+.el-icon-circle-plus-outline {
+  margin-left: 80px;
+}
+
+.el-main {
+  /* border: 1px solid black; */
+  padding: 0;
+}
+.searchPage {
+  padding: 20px;
+}
+.searchArea .el-input {
+  width: 80%;
+  margin-right: 20px;
+}
+
+.el-footer {
+  /* border: 1px solid red; */
+  border-top: 1px solid #dee1e6;
+  padding-left: 60px;
+}

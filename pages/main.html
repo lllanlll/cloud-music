@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>首页</title>
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <link rel="stylesheet" href="../style/main.css">
+</head>
+
+<body>
+  <div id="app">
+    <el-container>
+      <el-header height="30px">
+        <div class='logoText'>云音乐</div>
+        <div class='loginDetail'>
+          <a href="login.html" class="logBtn">{{ loginExit }}</a>
+          <span>welcome</span><span class="user">{{ user }}</span>
+        </div>
+
+      </el-header>
+      <el-container>
+        <el-main>
+          <el-tabs :tab-position="tabPosition" style="height: 800px;">
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-search"></i>搜索</span>
+              <div class="searchPage">
+                <div class="searchArea">
+                  <el-input v-model="searchInput" placeholder="暫時只能輸入ID查歌"></el-input>
+                  <el-button type="primary" onclick="getMusicDetail()">search</el-button>
+                </div>
+            </div>
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-magic-stick"></i>发现音乐</span>
+              Coding
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-video-play"></i>MV</span>
+              Coding
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-s-custom"></i>朋友</span>
+              Coding
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-headset"></i>本地音乐</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-download"></i>下载管理</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-s-platform"></i>最近播放</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-upload"></i>我的音乐云盘</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-headset"></i>我的电台</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-collection"></i>我的收藏</span>
+              定时任务补偿
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-s-promotion"></i>我的最爱</span>
+              定时任务补偿
+            </el-tab-pane>
+          </el-tabs>
+          <!-- <div class="aside-item" v-for="item in asideListCommon" :key="item.id">
+            <span :class="item.iconClass"></span><span>{{ item.text }}</span>
+          </div>
+          <div class="myMusic">
+            <p>我的音乐</p>
+            <div class="aside-item" v-for="item in asideListMy" :key="item.id">
+              <span :class="item.iconClass"></span><span>{{ item.text }}</span>
+            </div>
+          </div>
+          <div class="myMusicList">
+            <p><span>我的歌单</span><span class="el-icon-circle-plus-outline"></span></p>
+            <div class="aside-item" v-for="item in asideListMyList" :key="item.id">
+              <span :class="item.iconClass"></span><span>{{ item.text }}</span>
+            </div>
+          </div> -->
+        </el-main>
+      </el-container>
+      <el-footer>
+        <iframe frameborder="no" marginwidth="0" marginheight="0" width=1800 height=100
+          :src="currentMusic"></iframe>
+          
+      </el-footer>
+    </el-container>
+
+  </div>
+
+  <script>
+    function getQueryVariable(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) {
+          return pair[1];
+        }
+      }
+      return (false);
+    }
+
+    function getMusicDetail() {
+      // $.get(
+      //   'https://api.mlwei.com/music/api/wy/?key=523077333&cache=1&type=song&id=1305345331',
+      //   function (res) {
+      //     console.log(res.url)
+      //     vm.currentMusic = res.url
+      //   })
+      let id = vm.searchInput
+      let type = 2
+      let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
+      // 改id就可以實現換歌
+      vm.currentMusic = addre
+    }
+
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        user: getQueryVariable('username'),
+        loginExit: 'logIn',
+        tabPosition: 'left',
+        searchInput: '',
+        currentMusic: '//music.163.com/outchain/player?type=2&id=30590965',
+        asideListCommon: [{
+          id: '0',
+          text: '搜索',
+          iconClass: 'el-icon-search'
+        }, {
+          id: '1',
+          text: '发现音乐',
+          iconClass: 'el-icon-magic-stick'
+        }, {
+          id: '2',
+          text: 'MV',
+          iconClass: 'el-icon-video-play'
+        }, {
+          id: '3',
+          text: '朋友',
+          iconClass: 'el-icon-s-custom'
+        }],
+        asideListMy: [{
+          id: '0',
+          text: '本地音乐',
+          iconClass: 'el-icon-headset'
+        }, {
+          id: '1',
+          text: '下载管理',
+          iconClass: 'el-icon-download'
+        }, {
+          id: '2',
+          text: '最近播放',
+          iconClass: 'el-icon-s-platform'
+        }, {
+          id: '3',
+          text: '我的音乐云盘',
+          iconClass: 'el-icon-upload'
+        }, {
+          id: '4',
+          text: '我的电台',
+          iconClass: 'el-icon-headset'
+        }, {
+          id: '5',
+          text: '我的收藏',
+          iconClass: 'el-icon-collection'
+        }],
+        asideListMyList: [{
+          id: '0',
+          text: '我的最爱',
+          iconClass: 'el-icon-s-promotion'
+        }]
+      }
+    })
+  </script>
+</body>
+
+</html>
