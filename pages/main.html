@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="../style/main.css">
 </head>
 
-<body>
+<body onload="getMusicDetail()">
   <div id="app">
     <el-container>
       <el-header height="30px">
@@ -27,18 +27,34 @@
       <el-container>
         <el-main>
           <el-tabs :tab-position="tabPosition" style="height: 800px;">
-            <el-tab-pane>
+            <el-tab-pane class='tab-find'>
+              <span slot="label"><i class="el-icon-magic-stick"></i>发现音乐</span>
+              <p style="font-size:20px;color:#dee1e6;margin-bottom:10px;padding:10px;">Find Music</p>
+              <div class="turnImg">
+                <el-carousel :interval="4000" type="card" height="350px">
+                  <el-carousel-item v-for="(item,index) in findTurnImg" :key="index">
+                    <img :src="item.imgurl" alt="">
+                  </el-carousel-item>
+                </el-carousel>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane class='tab-search'>
               <span slot="label"><i class="el-icon-search"></i>搜索</span>
               <div class="searchPage">
                 <div class="searchArea">
-                  <el-input v-model="searchInput" placeholder="暫時只能輸入ID查歌"></el-input>
-                  <el-button type="primary" onclick="getMusicDetail()">search</el-button>
+                  <el-input v-model="searchInput" placeholder="輸入歌名搜索"></el-input>
+                  <el-button type="primary" @click="searchSongName">search</el-button>
+                  <div class="searchResultArea">
+                    <div class="searchItem" v-for="(item, index) in searchResult" :key="index" @click="listenThis(item)">
+                      <!-- <span>{{ index }}</span> -->
+                      <!-- <span v-if="item.vid">vip</span> -->
+                      <span>{{ item.title }}</span>
+                      <span>---->{{ item.author }}--->{{ item.album }}</span>
+                      <!-- <span v-show="searchShowIcon" class="el-icon-loading" style="float:right;"></span> -->
+                    </div>
+                  </div>
                 </div>
-            </div>
-            </el-tab-pane>
-            <el-tab-pane>
-              <span slot="label"><i class="el-icon-magic-stick"></i>发现音乐</span>
-              Coding
+              </div>
             </el-tab-pane>
             <el-tab-pane>
               <span slot="label"><i class="el-icon-video-play"></i>MV</span>
@@ -95,9 +111,11 @@
         </el-main>
       </el-container>
       <el-footer>
-        <iframe frameborder="no" marginwidth="0" marginheight="0" width=1800 height=100
-          :src="currentMusic"></iframe>
-          
+        <audio controls v-if="showAudio" style="width:1800px;height:80px;outline:none;">
+          <source :src="currentMusic">
+        </audio>
+        <!-- <iframe frameborder="no" marginwidth="0" marginheight="0" width=1800 height=100 :src="currentMusic"></iframe>
+        <iframe src="https://api.mlwei.com/music/play/?id=3641614987&type=songlist&autoplay=true" frameborder="0" width="100%" height="300" scrolling="no"></iframe> -->
       </el-footer>
     </el-container>
 
@@ -117,17 +135,17 @@
     }
 
     function getMusicDetail() {
-      // $.get(
-      //   'https://api.mlwei.com/music/api/wy/?key=523077333&cache=1&type=song&id=1305345331',
-      //   function (res) {
-      //     console.log(res.url)
-      //     vm.currentMusic = res.url
-      //   })
-      let id = vm.searchInput
-      let type = 2
-      let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
+      $.get(
+        'https://api.mlwei.com/music/api/wy/?key=523077333&cache=1&type=songlist&id=968312787',
+        function (res) {
+          console.log(res)
+          vm.musicList = res.Body
+        })
+      // let id = vm.searchInput
+      // let type = 2
+      // let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
       // 改id就可以實現換歌
-      vm.currentMusic = addre
+      // vm.currentMusic = addre
     }
 
     var vm = new Vue({
@@ -137,7 +155,11 @@
         loginExit: 'logIn',
         tabPosition: 'left',
         searchInput: '',
-        currentMusic: '//music.163.com/outchain/player?type=2&id=30590965',
+        showAudio: true,
+        musicList: [],
+        searchResult: [],
+        // searchShowIcon: false,
+        currentMusic:'',
         asideListCommon: [{
           id: '0',
           text: '搜索',
@@ -184,7 +206,43 @@
           id: '0',
           text: '我的最爱',
           iconClass: 'el-icon-s-promotion'
+        }],
+        findTurnImg: [{
+          imgurl: '../src/img/findTab/img1.jpg'
+        },{
+          imgurl: '../src/img/findTab/img2.jpg'
+        },{
+          imgurl: '../src/img/findTab/img3.jpg'
+        },{
+          imgurl: '../src/img/findTab/img4.jpg'
+        },{
+          imgurl: '../src/img/findTab/img5.jpg'
+        },{
+          imgurl: '../src/img/findTab/img6.jpg'
         }]
+      },
+      methods: {
+        listenThis(item) {
+          this.currentMusic = item.url
+          this.showAudio = false
+          // this.searchShowIcon = true
+          setTimeout(function () {
+            this.vm.showAudio = true
+          }, 1);
+        },
+        searchSongName() {
+          let uri = encodeURI(this.searchInput)
+          console.log(uri)
+          let val = this.searchInput
+          $.get(
+            `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=10`,
+            // `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=10`,
+            function (res) {
+              console.log(res)
+              window.vm.searchResult = res.Body
+            })
+          
+        }
       }
     })
   </script>
