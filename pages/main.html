@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="../style/main.css">
 </head>
 
-<body onload="getMusicDetail()">
+<body>
   <div id="app">
     <el-container>
       <el-header height="30px">
@@ -29,13 +29,27 @@
           <el-tabs :tab-position="tabPosition" style="height: 800px;">
             <el-tab-pane class='tab-find'>
               <span slot="label"><i class="el-icon-magic-stick"></i>发现音乐</span>
-              <p style="font-size:20px;color:#dee1e6;margin-bottom:10px;padding:10px;">Find Music</p>
-              <div class="turnImg">
-                <el-carousel :interval="4000" type="card" height="350px">
-                  <el-carousel-item v-for="(item,index) in findTurnImg" :key="index">
-                    <img :src="item.imgurl" alt="">
-                  </el-carousel-item>
-                </el-carousel>
+              <div class="findArea">
+                <p style="font-size:20px;color:#dee1e6;margin-bottom:10px;padding:10px;">Find Music</p>
+                <div class="turnImg">
+                  <el-carousel :interval="4000" type="card" height="350px" arrow="never">
+                    <el-carousel-item v-for="(item,index) in findTurnImg" :key="index">
+                      <img :src="item.imgurl" alt="">
+                    </el-carousel-item>
+                  </el-carousel>
+                </div>
+                <div class="songSet">
+                    <div class='songSetLi' :span='6' v-for="(item, index) in songSetList" :key="index" :offset="index > 0 ? 2 : 0">
+                      <el-card style="height:140px;" :body-style="{ padding: '0px' }">
+                        <img :src="item.imgurl" class="songSetImg" width="140px">
+                        <p class='imgBtnSet'>
+                          <span class='el-icon-star-off' title="點擊收藏歌單"></span>
+                          <span class="el-icon-headset" @click='addSongList(item)' title="點擊播放歌單"></span>
+                          <span>{{ item.title }}</span>
+                        </p>
+                      </el-card>
+                    </div>
+                </div>
               </div>
             </el-tab-pane>
             <el-tab-pane class='tab-search'>
@@ -45,7 +59,8 @@
                   <el-input v-model="searchInput" placeholder="輸入歌名搜索"></el-input>
                   <el-button type="primary" @click="searchSongName">search</el-button>
                   <div class="searchResultArea">
-                    <div class="searchItem" v-for="(item, index) in searchResult" :key="index" @click="listenThis(item)">
+                    <div class="searchItem" v-for="(item, index) in searchResult" :key="index"
+                      @click="listenThis(item)">
                       <!-- <span>{{ index }}</span> -->
                       <!-- <span v-if="item.vid">vip</span> -->
                       <span>{{ item.title }}</span>
@@ -57,8 +72,16 @@
               </div>
             </el-tab-pane>
             <el-tab-pane>
-              <span slot="label"><i class="el-icon-video-play"></i>MV</span>
-              Coding
+              <span slot="label"><i class="el-icon-video-play"></i>當前播放歌單</span>
+              <div class="currentSongList">
+                <div class="searchResultArea" :v-if='!musicList'>
+                  <div class="searchItem" v-for="(item, index) in musicList" :key="index" @click="listenThis(item)">
+                    <span>{{ item.title }}</span>
+                    <span>---->{{ item.author }}</span>
+                  </div>
+                </div>
+                <div :v-if="musicList">當前暫無歌單播放 快去選擇吧！</div>
+              </div>
             </el-tab-pane>
             <el-tab-pane>
               <span slot="label"><i class="el-icon-s-custom"></i>朋友</span>
@@ -111,7 +134,12 @@
         </el-main>
       </el-container>
       <el-footer>
-        <audio controls v-if="showAudio" style="width:1800px;height:80px;outline:none;">
+        <p style="font-weight:bold;margin-left:20px;">
+          歌名：--{{ currentMusicName }}--
+          歌手：--{{ currentMusicAuthor }}--
+          當前歌單：--{{ currentList }}--
+        </p>
+        <audio controls v-if="showAudio" style="width:1800px;outline:none;">
           <source :src="currentMusic">
         </audio>
         <!-- <iframe frameborder="no" marginwidth="0" marginheight="0" width=1800 height=100 :src="currentMusic"></iframe>
@@ -134,19 +162,22 @@
       return (false);
     }
 
-    function getMusicDetail() {
+    // 獲取網易雲音樂歌單
+    function addSongList(item) {
       $.get(
-        'https://api.mlwei.com/music/api/wy/?key=523077333&cache=1&type=songlist&id=968312787',
+        `https://api.mlwei.com/music/api/wy/?key=523077333&cache=1&type=songlist&id=${item.id}`,
         function (res) {
-          console.log(res)
+          console.log(res.Body)
           vm.musicList = res.Body
         })
-      // let id = vm.searchInput
-      // let type = 2
-      // let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
-      // 改id就可以實現換歌
-      // vm.currentMusic = addre
+      vm.currentList = item.title
     }
+    // let id = vm.searchInput
+    // let type = 2
+    // let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
+    // 改id就可以實現換歌
+    // vm.currentMusic = addre
+    // }
 
     var vm = new Vue({
       el: '#app',
@@ -159,7 +190,10 @@
         musicList: [],
         searchResult: [],
         // searchShowIcon: false,
-        currentMusic:'',
+        currentMusic: '',
+        currentMusicName: '',
+        currentMusicAuthor: '',
+        currentList: '',
         asideListCommon: [{
           id: '0',
           text: '搜索',
@@ -209,21 +243,64 @@
         }],
         findTurnImg: [{
           imgurl: '../src/img/findTab/img1.jpg'
-        },{
+        }, {
           imgurl: '../src/img/findTab/img2.jpg'
-        },{
+        }, {
           imgurl: '../src/img/findTab/img3.jpg'
-        },{
+        }, {
           imgurl: '../src/img/findTab/img4.jpg'
-        },{
+        }, {
           imgurl: '../src/img/findTab/img5.jpg'
-        },{
+        }, {
           imgurl: '../src/img/findTab/img6.jpg'
+        }],
+        songSetList: [{
+          imgurl: '../src/img/songSet/img1.jpg',
+          title: '木',
+          id: '2958358454'
+        }, {
+          imgurl: '../src/img/songSet/img2.jpg',
+          title: '質',
+          id: '586773281'
+        }, {
+          imgurl: '../src/img/songSet/img3.jpg',
+          title: '金',
+          id: '2771939044'
+        }, {
+          imgurl: '../src/img/songSet/img4.jpg',
+          title: '水',
+          id: '2968506653'
+        }, {
+          imgurl: '../src/img/songSet/img5.jpg',
+          title: '火',
+          id: '2898850627'
+        }, {
+          imgurl: '../src/img/songSet/img6.jpg',
+          title: '土',
+          id: '2774009329'
+        }, {
+          imgurl: '../src/img/songSet/img7.jpg',
+          title: '光',
+          id: '2357742963'
+        }, {
+          imgurl: '../src/img/songSet/img8.jpg',
+          title: '冰',
+          id: '2332465328'
+        }, {
+          imgurl: '../src/img/songSet/img9.jpg',
+          title: '暗',
+          id: '2563292040'
+        }, {
+          imgurl: '../src/img/songSet/img10.jpg',
+          title: '風',
+          id: '968312787'
         }]
       },
       methods: {
         listenThis(item) {
           this.currentMusic = item.url
+          this.currentMusicName = item.title
+          this.currentMusicAuthor = item.author
           this.showAudio = false
           // this.searchShowIcon = true
           setTimeout(function () {
@@ -235,13 +312,13 @@
           console.log(uri)
           let val = this.searchInput
           $.get(
-            `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=10`,
+            `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=20`,
             // `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=10`,
             function (res) {
               console.log(res)
               window.vm.searchResult = res.Body
             })
-          
+
         }
       }
     })

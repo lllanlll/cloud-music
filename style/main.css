@@ -83,14 +83,47 @@
   border: 1px solid #dee1e6;
   border-radius: 10px;
   margin-top: 10px;
+  cursor: pointer;
 }
 /* .searchItem span:nth-child(2n) {
   cursor: pointer;
 } */
+
+.findArea {
+  overflow-y: scroll;
+  height: 800px;
+}
 .turnImg {
   margin-left: 64px;
 }
 
+
+.songSetImg {
+  /* width: 200px; */
+  display: block;
+  float: left;
+}
+.songSetLi {
+  display: inline-block;
+  margin-left: 180px;
+  margin-bottom: 50px;
+}
+.imgBtnSet {
+  display: block;
+  float: right;
+  font-size: 30px;
+  /* padding-top: 15px; */
+}
+.imgBtnSet span {
+  display: block;
+  margin: 14px;
+  cursor: pointer;
+}
+
+.currentSongList {
+  height: 800px;
+  overflow-y: auto;
+}
 .el-footer {
   /* border: 1px solid red; */
   border-top: 1px solid #dee1e6;
