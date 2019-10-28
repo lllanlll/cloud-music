@@ -3,12 +3,12 @@ header("Content-type: text/html; charset=utf-8");
 $username = $_POST['username'];
 $password = $_POST['password'];
 $repassword = $_POST['repassword'];
-$telphone = $_POST['telphone'];
+$telephone = $_POST['telephone'];
 if ($username == '') {
   echo '<script>alert("请输入用户名!");history.go(-1);</script>';
   exit(0);
 }
-if ($username.length > 20) {
+if (strlen($username) > 20) {
   echo '<script>alert("用户名要 < 20位!");history.go(-1);</script>';
   exit(0);
 }
@@ -31,7 +31,7 @@ if ($password == $repassword) {
     exit(0);
   } else {
     $sqluser = "select username from userinfo where username = '$_POST[username]'";
-    $sqlphone = "select telphone from userinfo where telphone = '$_POST[telphone]'";
+    $sqlphone = "select telephone from userinfo where telephone = '$_POST[telephone]'";
     $resultuser = $conn->query($sqluser);
     $resultphone = $conn->query($sqlphone);
     $numberuser = mysqli_num_rows($resultuser);
@@ -41,7 +41,7 @@ if ($password == $repassword) {
     } else if($numberphone) {
       echo '<script>alert("手机号已经被注册");history.go(-1);</script>';
     } else {
-      $sql_insert = "insert into userinfo (username,password,telphone) values('$_POST[username]','$_POST[password]','$_POST[telphone]')";
+      $sql_insert = "insert into userinfo (username,password,telephone) values('$_POST[username]','$_POST[password]','$_POST[telephone]')";
       $res_insert = $conn->query($sql_insert);
       if ($res_insert) {
         echo '<script>window.location="../pages/login.html";</script>';

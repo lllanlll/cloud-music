@@ -39,16 +39,17 @@
                   </el-carousel>
                 </div>
                 <div class="songSet">
-                    <div class='songSetLi' :span='6' v-for="(item, index) in songSetList" :key="index" :offset="index > 0 ? 2 : 0">
-                      <el-card style="height:140px;" :body-style="{ padding: '0px' }">
-                        <img :src="item.imgurl" class="songSetImg" width="140px">
-                        <p class='imgBtnSet'>
-                          <span class='el-icon-star-off' title="點擊收藏歌單"></span>
-                          <span class="el-icon-headset" @click='addSongList(item)' title="點擊播放歌單"></span>
-                          <span>{{ item.title }}</span>
-                        </p>
-                      </el-card>
-                    </div>
+                  <div class='songSetLi' :span='6' v-for="(item, index) in songSetList" :key="index"
+                    :offset="index > 0 ? 2 : 0">
+                    <el-card style="height:140px;" :body-style="{ padding: '0px' }">
+                      <img :src="item.imgurl" class="songSetImg" width="140px">
+                      <p class='imgBtnSet'>
+                        <span class='el-icon-star-off' title="點擊收藏歌單"></span>
+                        <span class="el-icon-headset" @click='addSongList(item)' title="點擊播放歌單"></span>
+                        <span>{{ item.title }}</span>
+                      </p>
+                    </el-card>
+                  </div>
                 </div>
               </div>
             </el-tab-pane>
@@ -63,8 +64,8 @@
                       @click="listenThis(item)">
                       <!-- <span>{{ index }}</span> -->
                       <!-- <span v-if="item.vid">vip</span> -->
-                      <span>{{ item.title }}</span>
-                      <span>---->{{ item.author }}--->{{ item.album }}</span>
+                      <span>{{ item.name }}</span>
+                      <span>---->{{ item.artists[0].name }}</span>
                       <!-- <span v-show="searchShowIcon" class="el-icon-loading" style="float:right;"></span> -->
                     </div>
                   </div>
@@ -75,7 +76,7 @@
               <span slot="label"><i class="el-icon-video-play"></i>當前播放歌單</span>
               <div class="currentSongList">
                 <div class="searchResultArea" :v-if='!musicList'>
-                  <div class="searchItem" v-for="(item, index) in musicList" :key="index" @click="listenThis(item)">
+                  <div class="searchItem" v-for="(item, index) in musicList" :key="index" @click="listenList(item)">
                     <span>{{ item.title }}</span>
                     <span>---->{{ item.author }}</span>
                   </div>
@@ -84,10 +85,16 @@
               </div>
             </el-tab-pane>
             <el-tab-pane>
-              <span slot="label"><i class="el-icon-s-custom"></i>朋友</span>
-              Coding
+              <span slot="label"><i class="el-icon-s-custom"></i>歌词</span>
+              <div class="lyricBox">
+                <div class="lyricMain">
+                  <div class="lyric-item" v-for="(item,index) in currentLyric" :key="index">
+                    {{ item }}
+                  </div>
+                </div>
+              </div>
             </el-tab-pane>
-            <el-tab-pane>
+            <!-- <el-tab-pane>
               <span slot="label"><i class="el-icon-headset"></i>本地音乐</span>
               定时任务补偿
             </el-tab-pane>
@@ -114,7 +121,7 @@
             <el-tab-pane>
               <span slot="label"><i class="el-icon-s-promotion"></i>我的最爱</span>
               定时任务补偿
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
           <!-- <div class="aside-item" v-for="item in asideListCommon" :key="item.id">
             <span :class="item.iconClass"></span><span>{{ item.text }}</span>
@@ -133,7 +140,7 @@
           </div> -->
         </el-main>
       </el-container>
-      <el-footer>
+      <el-footer height="120px">
         <p style="font-weight:bold;margin-left:20px;">
           歌名：--{{ currentMusicName }}--
           歌手：--{{ currentMusicAuthor }}--
@@ -172,12 +179,6 @@
         })
       vm.currentList = item.title
     }
-    // let id = vm.searchInput
-    // let type = 2
-    // let addre = `//music.163.com/outchain/player?type=${type}&id=${id}`
-    // 改id就可以實現換歌
-    // vm.currentMusic = addre
-    // }
 
     var vm = new Vue({
       el: '#app',
@@ -191,6 +192,7 @@
         searchResult: [],
         // searchShowIcon: false,
         currentMusic: '',
+        currentLyric: [],
         currentMusicName: '',
         currentMusicAuthor: '',
         currentList: '',
@@ -298,29 +300,59 @@
       },
       methods: {
         listenThis(item) {
-          this.currentMusic = item.url
-          this.currentMusicName = item.title
-          this.currentMusicAuthor = item.author
-          this.showAudio = false
-          // this.searchShowIcon = true
-          setTimeout(function () {
-            this.vm.showAudio = true
-          }, 1);
-        },
-        searchSongName() {
-          let uri = encodeURI(this.searchInput)
-          console.log(uri)
-          let val = this.searchInput
           $.get(
-            `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=20`,
-            // `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=10`,
+            `http://localhost:3000/song/url?id=${item.id}`,
             function (res) {
               console.log(res)
-              window.vm.searchResult = res.Body
+              if (res.data[0].url) {
+                window.vm.currentMusic = res.data[0].url
+              } else {
+                alert("暂无版权！")
+              }
+            }
+          )
+          this.showAudio = false
+          this.currentMusicName = item.name
+          this.currentMusicAuthor = item.artists[0].name
+          $.get(
+            `http://localhost:3000/lyric?id=${item.id}`,
+            function (res) {
+              if (res.lrc) {
+                console.log(res.lrc.lyric)
+                window.vm.currentLyric = res.lrc.lyric.split('\n')
+              } else {
+                // alert("暂无歌词！")
+              }
+            }
+          )
+          setTimeout(function () {
+            this.vm.showAudio = true
+          }, 500);
+        },
+        listenList(item) {
+          this.showAudio = false
+          this.currentMusicName = item.title
+          this.currentMusicAuthor = item.author
+          window.vm.currentLyric = item.lrc.split('\n')
+          window.vm.currentMusic = item.url
+          setTimeout(function () {
+            this.vm.showAudio = true
+          }, 500);
+        },
+        searchSongName() {
+          // let uri = encodeURI(this.searchInput)
+          // console.log(uri)
+          let val = this.searchInput
+          $.get(
+            `http://localhost:3000/search?keywords=${val}`,
+            // `https://api88.net/api/qqmusic/?key=523077333&id=${uri}&type=so&cache=0&page=1&nu=20`,
+            function (res) {
+              console.log(res)
+              window.vm.searchResult = res.result.songs
             })
-
         }
-      }
+      },
+
     })
   </script>
 </body>

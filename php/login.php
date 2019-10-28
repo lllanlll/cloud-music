@@ -19,7 +19,7 @@
         $result = $conn->query($sql);
         $number = mysqli_num_rows($result);
         if ($number) {
-            header("Location:http://localhost/cloud-music/pages/main.html?username=$username");
+            header("Location:http://localhost:8000/cloud-music/pages/main.html?username=$username");
             echo '<script>window.location="../pages/main.html";</script>';
         } else {
             echo '<script>alert("用户名或密码错误！");history.go(-1);</script>';

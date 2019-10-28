@@ -129,3 +129,14 @@
   border-top: 1px solid #dee1e6;
   padding-left: 60px;
 }
+
+.lyricBox {
+  height: 800px;
+  overflow-y: auto;
+  background: #dee1e6;
+}
+.lyric-item {
+  margin: 0 auto;
+  width: 400px;
+  text-align: center;
+}

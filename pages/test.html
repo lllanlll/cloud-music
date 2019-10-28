@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <script>
+    const cityList = new Promise((resolve, reject) => {
+      $.ajax({
+        url: 'https://www.easy-mock.com/mock/5a52256ad408383e0e3868d7/lagou/city',
+        success(res) {
+          resolve(res)
+        }
+      })
+    })
+
+    // 第二步：找到城市是北京的id
+    cityList.then(res => {
+      let findCityId = res.filter(item => {
+        if (item.id == 'c1') {
+          return item
+        }
+      })[0].id
+
+      findCompanyId().then(res => {
+        // 第三步（2）：根据北京的id -> 找到北京公司的id
+        let findPostionId = res.filter(item => {
+          if (item.cityId == findCityId) {
+            return item
+          }
+        })[0].id
+
+        // 第四步（2）：传入公司的id
+        companyInfo(findPostionId)
+
+      })
+
+    })
+
+    // 第三步（1）：根据北京的id -> 找到北京公司的id
+    function findCompanyId() {
+      let aaa = new Promise((resolve, reject) => {
+        $.ajax({
+          url: 'https://www.easy-mock.com/mock/5a52256ad408383e0e3868d7/lagou/position-list',
+          success(res) {
+            resolve(res)
+          }
+        })
+      })
+      return aaa
+    }
+  </script>
+</body>
+
+</html>
